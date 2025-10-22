@@ -5,7 +5,7 @@ part 'scan_result.g.dart';
 part 'scan_result.freezed.dart';
 
 @freezed
-abstract class ScanResult with _$ScanResult {
+class ScanResult with _$ScanResult {
   const factory ScanResult({
     @JsonKey(name: 'scanData') required String data,
     required String labelType,

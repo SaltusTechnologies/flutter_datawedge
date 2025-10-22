@@ -1,6 +1,6 @@
 enum MethodChannelMethods {
   createDataWedgeProfile("createDataWedgeProfile"),
-  updateDataWedgeProfile("updateDataWedgeProfile"),
+  getPlatformVersion("getPlatformVersion"),
   listenScannerStatus("listenScannerStatus"),
   sendDataWedgeCommandStringParameter("sendDataWedgeCommandStringParameter");
 

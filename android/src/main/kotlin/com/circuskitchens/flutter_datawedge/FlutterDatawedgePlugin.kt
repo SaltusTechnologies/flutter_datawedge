@@ -92,15 +92,10 @@ class FlutterDatawedgePlugin : FlutterPlugin, MethodCallHandler, StreamHandler {
         }
     }
 
-    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onListen(arguments: Any?, events: EventSink?) {
         val receiver = SinkBroadcastReceiver(events)
         registeredReceivers.add(receiver)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            context.registerReceiver(receiver, intentFilter, RECEIVER_EXPORTED)
-        } else {
-            context.registerReceiver(receiver, intentFilter)
-        }
+        context.registerReceiver(receiver, intentFilter)
     }
 
     override fun onCancel(arguments: Any?) {

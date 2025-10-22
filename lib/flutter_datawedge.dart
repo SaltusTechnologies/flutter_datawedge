@@ -37,7 +37,9 @@ class FlutterDataWedge {
 
   /// Create a new instance of [FlutterDataWedge]
   /// [profileName] is the name of the profile which will be created
-  FlutterDataWedge({required this.profileName}) {
+  FlutterDataWedge({
+    required this.profileName,
+  }) {
     _setUpStreams();
   }
 
@@ -53,16 +55,15 @@ class FlutterDataWedge {
   /// Manually trigger scanning or stop scanning
   /// activate: true to trigger scanner, false to stop
   ///  Zebra API Doc: https://zebra-techdocs-archive.netlify.app/datawedge/11-3/guide/api/softscantrigger/
-  Future<Result<void, FlutterDatawedgeException>> scannerControl(
-    bool activate, {
-    String? commandIdentifier,
-  }) => _sendDataWedgeCommand(
-    DatawedgeApiTargets.softScanTrigger,
-    activate
-        ? ScannerControlStates.startScanning
-        : ScannerControlStates.stopScanning,
-    commandIdentifier: commandIdentifier,
-  );
+  Future<Result<void, FlutterDatawedgeException>> scannerControl(bool activate,
+          {String? commandIdentifier}) =>
+      _sendDataWedgeCommand(
+        DatawedgeApiTargets.softScanTrigger,
+        activate
+            ? ScannerControlStates.startScanning
+            : ScannerControlStates.stopScanning,
+        commandIdentifier: commandIdentifier,
+      );
 
   /// Enable or Disable the scanner temporarily
   /// Can be called anytime, but slower than [activateScanner]
@@ -71,13 +72,14 @@ class FlutterDataWedge {
   Future<Result<void, FlutterDatawedgeException>> enableScanner(
     bool enable, {
     String? commandIdentifier,
-  }) => _sendDataWedgeCommand(
-    DatawedgeApiTargets.scannerPlugin,
-    enable
-        ? ScannerPluginCommand.enablePlugin
-        : ScannerPluginCommand.disablePlugin,
-    commandIdentifier: commandIdentifier,
-  );
+  }) =>
+      _sendDataWedgeCommand(
+        DatawedgeApiTargets.scannerPlugin,
+        enable
+            ? ScannerPluginCommand.enablePlugin
+            : ScannerPluginCommand.disablePlugin,
+        commandIdentifier: commandIdentifier,
+      );
 
   /// Enable or Disable the scanner temporarily
   /// Way quicker then [enableScanner] but can only be called when ScannerStatus in SCANNING or WAITING state
@@ -87,20 +89,21 @@ class FlutterDataWedge {
   Future<Result<void, FlutterDatawedgeException>> activateScanner(
     bool activate, {
     String? commandIdentifier,
-  }) => _sendDataWedgeCommand(
-    DatawedgeApiTargets.scannerPlugin,
-    activate
-        ? ScannerPluginCommand.resumePlugin
-        : ScannerPluginCommand.suspendPlugin,
-    commandIdentifier: commandIdentifier,
-  );
+  }) =>
+      _sendDataWedgeCommand(
+        DatawedgeApiTargets.scannerPlugin,
+        activate
+            ? ScannerPluginCommand.resumePlugin
+            : ScannerPluginCommand.suspendPlugin,
+        commandIdentifier: commandIdentifier,
+      );
 
   /// Returns the version of the Android OS
   /// example: Android 4.4, Android 10
   /// see also: https://developer.android.com/reference/android/os/Build.VERSION#RELEASE
   Future<String?> platformVersion() => _methodChannel.invokeMethod<String>(
-    MethodChannelMethods.getPlatformVersion.value,
-  );
+        MethodChannelMethods.getPlatformVersion.value,
+      );
 
   /// Create and configure a Datawedge profile with the given name
   /// Returns when the Command is executed NOT when DataWedge is ready to be operated again
@@ -110,8 +113,7 @@ class FlutterDataWedge {
         MethodChannelMethods.createDataWedgeProfile.value,
         jsonEncode({
           "name": profileName,
-          'commandIdentifier':
-              commandIdentifier ?? 'createProfile_$profileName',
+          'commandIdentifier': commandIdentifier ?? 'createProfile_$profileName'
         }),
       );
 
@@ -120,7 +122,7 @@ class FlutterDataWedge {
         MethodChannelMethods.listenScannerStatus.value,
         jsonEncode({
           'commandIdentifier':
-              commandIdentifier ?? 'enableListeningStatus_$profileName',
+              commandIdentifier ?? 'enableListeningStatus_$profileName'
         }),
       );
 
@@ -132,27 +134,20 @@ class FlutterDataWedge {
         .map((event) => jsonDecode(event) as Map<String, dynamic>);
 
     _scannerEventStream = sourceStream
-        .where(
-          (event) =>
-              DataWedgeEventType.fromMap(event) ==
-              DataWedgeEventType.actionResult,
-        )
+        .where((event) =>
+            DataWedgeEventType.fromMap(event) ==
+            DataWedgeEventType.actionResult)
         .map(ActionResult.fromJson);
 
     _scanResultStream = sourceStream
-        .where(
-          (event) =>
-              DataWedgeEventType.fromMap(event) ==
-              DataWedgeEventType.scanResult,
-        )
+        .where((event) =>
+            DataWedgeEventType.fromMap(event) == DataWedgeEventType.scanResult)
         .map(ScanResult.fromJson);
 
     _scannerStatusStream = sourceStream
-        .where(
-          (event) =>
-              DataWedgeEventType.fromMap(event) ==
-              DataWedgeEventType.scannerStatus,
-        )
+        .where((event) =>
+            DataWedgeEventType.fromMap(event) ==
+            DataWedgeEventType.scannerStatus)
         .map(ScannerStatus.fromJson);
   }
 
@@ -172,16 +167,13 @@ class FlutterDataWedge {
           "command": command.value,
           "parameter": parameter.value,
           'commandIdentifier':
-              commandIdentifier ?? '${command.value}_$profileName',
+              commandIdentifier ?? '${command.value}_$profileName'
         }),
       );
       return Result.success(null);
     } catch (e) {
-      return Result.failure(
-        FlutterDatawedgeException(
-          "Error while sending command to DataWedge. caused by: $e",
-        ),
-      );
+      return Result.failure(FlutterDatawedgeException(
+          "Error while sending command to DataWedge. caused by: $e"));
     }
   }
 }
